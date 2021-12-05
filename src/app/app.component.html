@@ -2,7 +2,7 @@
 
 <h2>Widget</h2>
 
-<iframe #scFrame id="soundcloud_widget"
+<iframe #scFrame id="soundcloud_widget" allow="autoplay"
   src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/257613835&color=%23b69a7a&show_teaser=false"
   width="420"
   height="120"
@@ -10,6 +10,25 @@
 </iframe>
 
 <div *ngIf="viewIsReady">
+  <h2>Methods</h2>
+  <div>Optional argument set to 50</div>
+
+  <table>
+    <tr *ngFor="let method of widgetFunctions">
+        <td>
+          <button (click)="this.SC.widget1[method](50)">
+            {{method}}
+          </button>
+        </td>
+    </tr>
+    <tr>
+      <td>
+        <button (click)="this.SC.widget1.load('soundcloud.com/breger')">
+          load(soundcloud.com/breger)
+        </button>
+      </td>
+    </tr>
+  </table>
   <h2>Getters</h2>
 
   <table>

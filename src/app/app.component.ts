@@ -11,6 +11,7 @@ export class AppComponent implements AfterViewInit {
   SC : any = {};
   viewIsReady = false ;
   testObs: any;
+  widgetFunctions = ["play", "pause", "toggle", "seekTo", "setVolume", "next", "prev", "skip"];
   widgetGetters = ["getVolume", "getDuration", "getPosition", "getSounds", "getCurrentSound", "getCurrentSoundIndex", "isPaused"];
   widgetEvents = ["loadProgress", "playProgress", "play", "pause", "finish", "seek", "ready", "sharePanelOpened", "downloadClicked", "buyClicked", "error",];
   binded : boolean =false;
@@ -26,6 +27,16 @@ export class AppComponent implements AfterViewInit {
 
   }
   
+  bindAlertTogetVolume() {
+    this.SC.widget1.getVolume.bind=function(v : any) {alert("Volume :" + v)};
+    this.binded=true;
+  }
+
+  unbindAlertTogetVolume() {
+    this.SC.widget1.getVolume.unbind();
+    this.binded=false;
+  }
+
   onReceiveWidgetMessage() {
     this.renderer.listen('window', 'message', (event) => {
       
@@ -36,12 +47,11 @@ export class AppComponent implements AfterViewInit {
     else {
         const widgetData = JSON.parse(event.data);
         // console.log('data received from trusted source :', widgetData);
-        const widgetGetters = ["getVolume", "getDuration", "getPosition", "getSounds", "getCurrentSound", "getCurrentSoundIndex", "isPaused"];
 
           for (const property in this.SC) {
             if (event.source===this.SC[property].source()) {
               // console.log("message received from widget named :",property)
-              for (const p of widgetGetters) {
+              for (const p of this.widgetGetters) {
                   if (p==widgetData.method) {
                     this.SC[property][widgetData.method].result=widgetData.value;
                     return
@@ -62,16 +72,18 @@ export class AppComponent implements AfterViewInit {
     this.SC[n]= {};
     this.SC[n].event = {};
     this.SC[n].source = () => {return elRef.nativeElement.contentWindow};
+    this.SC[n].load = (url : string) => {elRef.nativeElement.src = "https://w.soundcloud.com/player/?url=https://" + url + "&amp;auto_play=true"};
 
-    const widgetFunctions = ["play", "pause", "toggle", "seekTo", "setVolume", "next", "prev", "skip"];
-    widgetFunctions.forEach(e => {
-      this.SC[n][e] = () => {
+    this.widgetFunctions.forEach(e => {
+      this.SC[n][e] = (v : number) => {
+        if (v) 
+        elRef.nativeElement.contentWindow.postMessage('{"method":"' + e + '","value":' + v + '}', "https://w.soundcloud.com/player/");
+        else 
         elRef.nativeElement.contentWindow.postMessage('{"method":"' + e + '"}', "https://w.soundcloud.com/player/");
       }
     });
 
-    const widgetGetters = ["getVolume", "getDuration", "getPosition", "getSounds", "getCurrentSound", "getCurrentSoundIndex", "isPaused"];
-    widgetGetters.forEach(e => {
+    this.widgetGetters.forEach(e => {
       this.SC[n][e] = () => {
         elRef.nativeElement.contentWindow.postMessage('{"method":"' + e + '","value":null}', "https://w.soundcloud.com/player/");
       }
@@ -83,8 +95,7 @@ export class AppComponent implements AfterViewInit {
 
     });
 
-    const widgetEvents = ["loadProgress", "playProgress", "play", "pause", "finish", "seek", "ready", "sharePanelOpened", "downloadClicked", "buyClicked", "error",];
-    widgetEvents.forEach(e => {
+    this.widgetEvents.forEach(e => {
       this.SC[n].event[e] = (b : boolean) => {
         if (b)
           elRef.nativeElement.contentWindow.postMessage('{"method":"addEventListener","value":"' + e + '"}', "https://w.soundcloud.com/player/");
@@ -97,16 +108,6 @@ export class AppComponent implements AfterViewInit {
       this.SC[n].event[e]["bind"]=function () {};
       this.SC[n].event[e]["unbind"]=function (v: any) {this.bind=function () {};};
     });
-  }
-
-  bindAlertTogetVolume() {
-    this.SC.widget1.getVolume.bind=function(v : any) {alert("Volume :" + v)};
-    this.binded=true;
-  }
-
-  unbindAlertTogetVolume() {
-    this.SC.widget1.getVolume.unbind();
-    this.binded=false;
   }
 
 }
