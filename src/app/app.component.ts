@@ -10,11 +10,11 @@ export class AppComponent implements AfterViewInit {
   title = 'soundcloud-widgetAPI';
   SC : any = {};
   viewIsReady = false ;
-  testObs: any;
   widgetFunctions = ["play", "pause", "toggle", "seekTo", "setVolume", "next", "prev", "skip"];
   widgetGetters = ["getVolume", "getDuration", "getPosition", "getSounds", "getCurrentSound", "getCurrentSoundIndex", "isPaused"];
   widgetEvents = ["loadProgress", "playProgress", "play", "pause", "finish", "seek", "ready", "sharePanelOpened", "downloadClicked", "buyClicked", "error",];
-  binded : boolean =false;
+  bindedGet : boolean =false;
+  bindedEvent : boolean =false;
 
   @ViewChild("scFrame", { static: false }) scFrame!: ElementRef;
 
@@ -29,12 +29,22 @@ export class AppComponent implements AfterViewInit {
   
   bindAlertTogetVolume() {
     this.SC.widget1.getVolume.bind=function(v : any) {alert("Volume :" + v)};
-    this.binded=true;
+    this.bindedGet=true;
   }
 
   unbindAlertTogetVolume() {
     this.SC.widget1.getVolume.unbind();
-    this.binded=false;
+    this.bindedGet=false;
+  }
+  
+  bindAlertToPauseEvent() {
+    this.SC.widget1.event.pause.bind=function(v : any) {alert("event :" + JSON.stringify(v))};
+    this.bindedEvent=true;
+  }
+
+  unbindAlertToPauseEvent() {
+    this.SC.widget1.event.pause.unbind();
+    this.bindedEvent=false;
   }
 
   onReceiveWidgetMessage() {
@@ -57,8 +67,8 @@ export class AppComponent implements AfterViewInit {
                     return
                   }
               }
-              if (widgetData.value==null) this.SC[property].event[widgetData.method].value=Date.now();
-              else this.SC[property].event[widgetData.method].value=widgetData.value;
+              if (widgetData.value==null) this.SC[property].event[widgetData.method].result=Date.now();
+              else this.SC[property].event[widgetData.method].result=widgetData.value;
               return
             }
           }

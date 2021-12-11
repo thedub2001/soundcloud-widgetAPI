@@ -65,8 +65,11 @@
   </table>
 
   <h2>Bind a function to a getter or an event</h2>
-  <div *ngIf="binded" style="color:red">
+  <div *ngIf="bindedGet" style="color:red">
     The alert window is binded to the getVolume function
+  </div>
+  <div *ngIf="bindedEvent" style="color:red">
+    The alert window is binded to the pause event (don't forget to subscribe to pause event)
   </div>
   <table>
     <tr >
@@ -75,6 +78,14 @@
         </td>
         <td>
           <button (click)="unbindAlertTogetVolume()">unbindAlertTogetVolume function</button>
+        </td>
+    </tr>
+    <tr >
+        <td>
+          <button (click)="bindAlertToPauseEvent()">bindAlertToPauseEvent function</button>
+        </td>
+        <td>
+          <button (click)="unbindAlertToPauseEvent()">unbindAlertToPauseEvent function</button>
         </td>
     </tr>
   </table>
