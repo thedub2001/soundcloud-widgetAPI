@@ -27,6 +27,8 @@ export class AppComponent implements AfterViewInit {
     this.viewIsReady = true;
 
   }
+
+  // IMPORTANT : after changing the src of the widget, we need to add listeners again
   
   bindAlertTogetVolume() {
     this.SC.widget1.getVolume.bind=function(v : any) {alert("Volume :" + v)};
@@ -48,6 +50,5 @@ export class AppComponent implements AfterViewInit {
     this.bindedEvent=false;
   }
 
-// TO DO : after changing the src of the widget, binded events stop working
 
 }

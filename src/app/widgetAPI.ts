@@ -18,7 +18,7 @@ export function onReceiveWidgetMessage(ren:Renderer2,SC:{}) {
 
           for (const property in SC) {
             if (event.source===SC[property].source()) {
-               console.log("message received from widget named :",property)
+               // console.log("message received from widget named :",property)
               for (const p of widgetGetters) {
                   if (p==widgetData.method) {
                     SC[property][widgetData.method].result=widgetData.value;
@@ -26,8 +26,7 @@ export function onReceiveWidgetMessage(ren:Renderer2,SC:{}) {
                     return
                   }
               }
-              if (widgetData.value==null) {SC[property].event[widgetData.method].result=Date.now();                    console.log("value :",widgetData)
-            }
+              if (widgetData.value==null) SC[property].event[widgetData.method].result=Date.now();
               else SC[property].event[widgetData.method].result=widgetData.value;
               return
             }
